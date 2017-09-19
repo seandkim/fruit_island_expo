@@ -3,9 +3,13 @@ import { Button, Image, View } from 'react-native';
 import { ImagePicker } from 'expo';
 
 export default class CameraScreen extends React.Component {
-  state = {
-    imageURI: null,
-  };
+  constructor(props) {
+    super(props)
+
+    this.state = {
+      imageURI: null,
+    };
+  }
 
   render() {
     console.log("render start", this.state)

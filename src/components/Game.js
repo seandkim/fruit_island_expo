@@ -15,7 +15,7 @@ import Dot from './Dot';
 import Monkey from './Monkey';
 import Assistant from './Assistant';
 import CommandPanel from './CommandPanel';
-import Camera from './Camera';
+import CameraScreen from './CameraScreen';
 import stage0 from '../resources/stages/stage0.json';
 import stage1 from '../resources/stages/stage1.json';
 import stage2 from '../resources/stages/stage2.json';
@@ -356,7 +356,7 @@ class Game extends Component {
 
   render() {
     if (this.state.cameraOn) {
-      return <Camera tookPicture={this.tookPicture.bind(this)}/>
+      return <CameraScreen tookPicture={this.tookPicture.bind(this)}/>
     }
 
     // game playing in progress
