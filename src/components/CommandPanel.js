@@ -10,7 +10,7 @@ export default class CommandPanel extends Component {
     super(props)
 
     this.state = {
-      commands: [-1,0,1,0],
+      commands: [-1],
     }
   }
 

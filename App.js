@@ -18,12 +18,11 @@ export default class App extends React.Component {
     }
 
     return (
-      // <Provider store={createStore(reducers, init)}>
-      //   <View style={styles.container}>
-      //     <Game/>
-      //   </View>
-      // </Provider>
-      <CameraScreen />
+      <Provider store={createStore(reducers, init)}>
+        <View style={styles.container}>
+          <Game/>
+        </View>
+      </Provider>
     );
   }
 }

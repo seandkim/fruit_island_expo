@@ -89,14 +89,45 @@ class Game extends Component {
   }
 
   /**
-   * Callback function that is called when picture is taken
-   * TODO set cameraOn to false first, then display loading screen
-   * @param  {[type]} data [description]
+   * Callback function that is called when post method (fruit detection) returns
+   * result.
+   * @param  {string[]} fruits list of either ["banana", "orange", "apple"]
+   * @param  {string}   error
+   * @return {[type]}        [description]
    */
-  tookPicture(imageBase64) {
-    console.log("tookPicture start", )
+  receivedPostResult(fruits, error) {
+    console.log("receivedPostResult", fruits, error)
 
+    if (error != "") {
+      Alert.alert("Could not connect to server.") //TODO change to voice
+    } else {
+      //TODO speak the result
 
+      let commands = []
+      for (var i = 0; i < fruits.length; i++) {
+        let command;
+        switch (fruits[i]) {
+          case "banana":
+          command = 0;
+          break;
+          case "apple":
+          command = -1;
+          break;
+          case "orange":
+          command = 1;
+          break;
+        }
+
+        commands.push(command)
+      }
+
+      this.setCurrentCommands(commands)
+    }
+  }
+
+  setCurrentCommands(commands) {
+    this.setState({currentCommands: commands})
+    this.commandPanel.setState({commands: commands})
   }
 
   /**
@@ -320,10 +351,6 @@ class Game extends Component {
   }
 
   render() {
-    if (this.state.cameraOn) {
-      return <CameraScreen tookPicture={this.tookPicture.bind(this)}/>
-    }
-
     // game playing in progress
     if (this.state.gameStatus === 'started') {
       // to place monkey on the dot, must wait for dots to get rendered
@@ -341,13 +368,14 @@ class Game extends Component {
             {/* dots  */}
             {this.renderDots(this.getCurrentStage())}
 
-            <CommandPanel />
+            <CommandPanel ref={(ref)=>this.commandPanel=ref} />
           </View>
 
           {/* Touchable are accessible by default, so need to be siblings of
             dots to avoid accessibility conflicts. */}
           {/* TODO delete callback functions */}
-          <Assistant ref={(ref)=>this.assistant=ref} game={this} />
+          <Assistant ref={(ref)=>this.assistant=ref} game={this}
+          receivedPostResult={this.receivedPostResult.bind(this)}/>
         </View>
       )
     // if game is not being played & need to show specific page

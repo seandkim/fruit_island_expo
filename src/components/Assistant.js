@@ -1,11 +1,12 @@
 import React, { Component } from 'react';
 import {
   Alert,
+  Image,
   Text,
   View,
   StyleSheet,
   TouchableWithoutFeedback } from 'react-native';
-// import Camera from 'react-native-camera'; TODO
+import { ImagePicker } from 'expo';
 
 class Assistant extends Component {
   /**
@@ -73,7 +74,7 @@ class Assistant extends Component {
       <View style={styles.wrapper} accessibilityLabel={'Voice Assistant'}>
         <TouchableWithoutFeedback
           accessibilityLabel={'Camera Button'}
-          onPress={this.openCamera.bind(this)} >
+          onPress={this.openCamera} >
           <Image source={require('../resources/UI_Components/camera.png')}/>
         </TouchableWithoutFeedback>
         <TouchableWithoutFeedback
@@ -84,15 +85,52 @@ class Assistant extends Component {
       </View>
     )
   }
+
+  openCamera = async () => {
+    console.log("Opened Camera")
+      let result = await ImagePicker.launchCameraAsync({
+        base64: true,
+      });
+
+      if (!result.cancelled) {
+          console.log("sending POST call");
+          var formData = new FormData();
+          formData.append('file', result.base64);
+          // make API call to amazon
+          var root = 'http://ec2-54-165-118-145.compute-1.amazonaws.com:8080/classify/api';
+          fetch(root, {
+              method: "POST",
+              headers: {
+                  "Content-Type": "multipart/form-data",
+              },
+              body: formData
+          })
+          .then(function(responseJson) {
+              console.log("Post method was successful", responseJson);
+              // replace single quote to double quote to interpret as json
+              const results = JSON.parse(responseJson._bodyText.replace(/\'/g, "\""))
+
+              var fruits = []
+              for (var i = 0; i < results.length; i++) {
+                fruits.push(results[i]["label"])
+              }
+
+              this.props.receivedPostResult(fruits, "")
+          }.bind(this))
+
+          .catch(function(error) {
+              console.log("Post method returned error", error)
+              this.props.receivedPostResult([], error)
+          }.bind(this));
+      }
+    };
 }
 
 const styles = StyleSheet.create({
   wrapper: {
     width: '20%',
     height: '100%',
-    // backgroundColor: "#ffeb3b", // yellow
-    backgroundColor: "#677fe3", // for debugging
-    zIndex: 10, //display assistant on the background
+    backgroundColor: "black",
     flexDirection: 'column',
     justifyContent: 'space-around',
     alignItems: 'center',
