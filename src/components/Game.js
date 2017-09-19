@@ -50,7 +50,7 @@ class Game extends Component {
       stageIdx: 0,
       // TODO add loading status when waiting for async results
       gameStatus: "started", // intro, started, fail, success, finished
-      currentCommands: [1], // stores parsed result of latest photo taken
+      currentCommands: [], // stores parsed result of latest photo taken
       loading: false, // displays the loading icon and disables all buttons
       helpScreen: false, // displays the help screen
     }
