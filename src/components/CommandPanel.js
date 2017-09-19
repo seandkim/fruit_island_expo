@@ -10,7 +10,7 @@ export default class CommandPanel extends Component {
     super(props)
 
     this.state = {
-      commands: [-1],
+      commands: [],
     }
   }
 
@@ -35,7 +35,8 @@ export default class CommandPanel extends Component {
         break;
     }
 
-    return <Image key={key} accessible={true} accessibilityLabel={label} source={path} />
+    return <Image style={styles.icon} key={key}
+      accessible={true} accessibilityLabel={label} source={path} />
   }
 
   render() {
@@ -61,4 +62,9 @@ const styles = StyleSheet.create({
     justifyContent: "flex-start",
     alignItems: "center",
   },
+
+  icon: {
+    marginLeft: 10,
+    marginRight: 10,
+  }
 })

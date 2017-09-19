@@ -46,7 +46,7 @@ class Game extends Component {
     this.state = {
       stageIdx: 0,
       // TODO add loading status when waiting for async results
-      gameStatus: "started", // intro, started, fail, success, finished
+      gameStatus: "intro", // intro, started, fail, success, finished
       cameraOn: false,
       currentCommands: null // stores parsed result of latest photo taken
     }
@@ -110,10 +110,10 @@ class Game extends Component {
           case "banana":
           command = 0;
           break;
-          case "apple":
+          case "orange":
           command = -1;
           break;
-          case "orange":
+          case "apple":
           command = 1;
           break;
         }
@@ -207,7 +207,8 @@ class Game extends Component {
    * @return {boolean} true if move was successful; false otherwise
    */
   moveMonkey(command) {
-    switch (command) {
+    try {
+      switch (command) {
       case -1: // rotate counter-clockwise
         this.monkey.rotate(false)
         return true
@@ -231,6 +232,12 @@ class Game extends Component {
             break
         }
         return this.setMonkeyPosition(rowIdx, colIdx)
+      }
+    } catch (err) {
+      // TODO this.monkey.getDirection raises an error if the stage ends early.
+      // try/except statement is quick way around, but we should prevent this
+      // function to be called if stage ends early.
+      console.log(err, "need to fix this. See moveMonkey function in Game.js")
     }
   }
 
@@ -241,7 +248,8 @@ class Game extends Component {
     } else {
       this.assistant.speakText("Running program...")
 
-      const commands = (this.getCurrentStage())['solution'] // TODO switch to this.currentCommands
+      // const commands = (this.getCurrentStage())['solution']
+      commands = this.state.currentCommands
 
       // pass in command to move the monkey in intervals. The verbosity is due
       // to the fact that you can't pass in different argument to setInterval
@@ -265,6 +273,8 @@ class Game extends Component {
         // stop interval if there are no more commands / move was unsuccessful
         if (command == null || !res) {
           clearInterval(id)
+
+          // TODO display fail screen
         }
       }.bind(this), this.moveIntvl)
     }
@@ -301,7 +311,7 @@ class Game extends Component {
     }
 
     return (
-      <TouchableHighlight style={styles.gameWrapper} onPress={onPress}>
+      <TouchableHighlight style={styles.wholeWrapper} onPress={onPress}>
         <Image style={styles.screenWrapper} source={path}/>
       </TouchableHighlight>
     )
@@ -394,8 +404,6 @@ const styles = StyleSheet.create({
   },
 
   gameWrapper: {
-    // backgroundColor: "#ffeb3b", //yellow
-    backgroundColor: "rgb(193, 1, 99)",
     width: "80%",
     height: "100%",
     flexDirection: 'column',
