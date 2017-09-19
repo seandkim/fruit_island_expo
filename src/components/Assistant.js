@@ -36,6 +36,7 @@ class Assistant extends Component {
     if (!commands || commands.length == 0) {
       this.speakText("You need to take a picture first")
     } else {
+      // TODO want to change to playSound('monkey') but audio gets mixed up
       this.speakText("Running program...")
       this.props.game.runProgram(commands)
     }

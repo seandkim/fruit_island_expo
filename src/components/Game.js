@@ -50,7 +50,7 @@ class Game extends Component {
       stageIdx: 0,
       // TODO add loading status when waiting for async results
       gameStatus: "started", // intro, started, fail, success, finished
-      currentCommands: [], // stores parsed result of latest photo taken
+      currentCommands: [1], // stores parsed result of latest photo taken
       loading: false, // displays the loading icon and disables all buttons
       helpScreen: false, // displays the help screen
     }
@@ -190,32 +190,8 @@ class Game extends Component {
       }
     )
 
-    // check if reached apple or dead-end
-    if (monkeyDot.isApple()) {
-      // display 'success' if there are leftover stages. Display 'finished'
-      // if all stages are completed
-      // setTimeout allows the screen to be loaded after the user has time to
-      // see that the monkey reached the apple
-      console.log("reached apple")
-      // setTimeout(() => this.props.stageClear("success"), this.moveIntvl)
-
-      setTimeout(() => this.setState({
-        currentCommands: [],
-        gameStatus: this.stages.length === this.state.stageIdx+1 ? 'finished' : 'success'
-      }), this.moveIntvl)
-
-    } else if (!monkeyDot.isJumpable()) {
-      setTimeout(() => {
-        // TODO potential async bug?
-        // TODO change to redux action
-        // TODO should we reset the commands every time we fail?
-        this.setState({
-          gameStatus: 'fail',
-        })
-      }, this.moveIntvl)
-      return false
-    }
-    return true
+    // if this returns false, calling function should end the round
+    return monkeyDot.isJumpable()
   }
 
   /**
@@ -287,19 +263,31 @@ class Game extends Component {
         if (command != null) {
           res = this.moveMonkey(command)
         }
-        // stop interval if there are no more commands / move was unsuccessful
-        if (command == null || !res) {
+
+        // reached apple in the middle
+        // TODO if we want to enforce that they reach apple at the END of commands,
+        // remove `command == null`.
+        if (command == null && this.getMonkeyDot().isApple()) {
+          console.log("success case")
           clearInterval(id)
 
-          // TODO display fail screen
+          // display 'success' if there are leftover stages. Display 'finished'
+          // if all stages are completed
+          // setTimeout allows the screen to be loaded after the user has time to
+          // see that the monkey reached the apple
+          setTimeout(() => this.setState({
+            gameStatus: this.stages.length === this.state.stageIdx+1 ? 'finished' : 'success'
+          }), this.moveIntvl)
+
+        // stop interval if there are no more commands / move was unsuccessful
+        } else if (command == null || !res) {
+          console.log("failure case")
+          clearInterval(id)
+
+          setTimeout(() => this.setState({gameStatus: 'fail'}), this.moveIntvl);
         }
       }.bind(this), this.moveIntvl)
     }
-  }
-
-  solvePhase() {
-    this.assistant.speakText("Solving the phase.")
-
   }
 
   ///////////////////////////////////
@@ -310,12 +298,19 @@ class Game extends Component {
     switch (status) {
     case 'intro':
       path=require('../resources/screens/intro.png')
-      onPress=(() => this.setState({gameStatus: 'started', stageIdx: 0}))
+      onPress=(() => this.setState({
+        gameStatus: 'started',
+        stageIdx: 0,
+        currentCommands: []
+      }))
       break
     case 'fail':
       this.playSound('fail')
       path=require('../resources/screens/failed.jpg')
-      onPress=(() => this.setState({gameStatus: 'started'}))
+      onPress=(() => this.setState({
+        gameStatus: 'started',
+        currentCommands: []
+      }))
       break
     case 'success':
       this.playSound('success')
@@ -323,7 +318,8 @@ class Game extends Component {
       onPress=(() => {
         this.setState({
         gameStatus: 'started',
-        stageIdx: this.state.stageIdx+1
+        stageIdx: this.state.stageIdx+1,
+        currentCommands: []
       })})
       break;
     case 'finished': // reset the game
