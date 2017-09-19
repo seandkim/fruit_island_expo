@@ -13,7 +13,7 @@
 
 This is created with [create-react-native-app](https://facebook.github.io/react-native/blog/2017/03/13/introducing-create-react-native-app.html). If you have any trouble running `npm start`, checkout their docs or git repository.  
 
-#### Problems that needs to be fixed / discussed
+## Problems that needs to be fixed / discussed
 - Add more stages.
 - Can apple be reached in the middle of running commands or just at the end?
 - Orientation Bug: open camera => change to portrait => go back to game => game is now in portrait not landscape.
