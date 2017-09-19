@@ -36,7 +36,7 @@ class Assistant extends Component {
   }
 
   displayHelp() {
-    
+
   }
 
   render() {

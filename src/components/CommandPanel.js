@@ -6,14 +6,6 @@ import {
 } from 'react-native';
 
 export default class CommandPanel extends Component {
-  constructor(props) {
-    super(props)
-
-    this.state = {
-      commands: [],
-    }
-  }
-
   // {-1: rotate left, 0: move forward, 1: rotate right}
   // must pass in unique key
   getIcon(command, key) {
@@ -40,7 +32,7 @@ export default class CommandPanel extends Component {
   }
 
   render() {
-    const icons = this.state.commands.map(
+    const icons = this.props.commands.map(
       (command, i) => this.getIcon(command, i)
     )
 

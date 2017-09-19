@@ -25,6 +25,8 @@ import stage3 from '../resources/stages/stage3.json';
 import stage4 from '../resources/stages/stage4.json';
 import TimerMixin from 'react-timer-mixin';
 
+import { Audio } from 'expo';
+
 /**
  * Main controller class. interaction with voice assistant and the map.
  * To add a stage, you must import the stage json file and add to this.stages.
@@ -47,9 +49,38 @@ class Game extends Component {
       stageIdx: 0,
       // TODO add loading status when waiting for async results
       gameStatus: "intro", // intro, started, fail, success, finished
-      currentCommands: [], // stores parsed result of latest photo taken
+      currentCommands: [1,1,1,1], // stores parsed result of latest photo taken
       loading: false,
     }
+
+    // dictinary of action => Expo.Audio.Sound object
+    this.sounds = this.loadSounds()
+  }
+
+  loadSounds() {
+    const paths = {
+      'jump': require('../resources/sounds/jump.wav'),
+      'turn_left': require('../resources/sounds/turn_left.mp3'),
+      'turn_right': require('../resources/sounds/turn_right.wav'),
+    }
+
+    let sounds = {}
+    for (let action in paths) {
+      const soundObject = new Expo.Audio.Sound();
+      try {
+
+
+        // TODO change to await somehow. Currently it raises "await is a
+        // reserved word" error. This works just because audio is played
+        // some time after it is loaded (when commands are being executed)
+        soundObject.loadAsync(paths[action]);
+      } catch (error) {
+      }
+
+      sounds[action] = soundObject
+    }
+
+    return sounds
   }
 
   getCurrentStage() {
@@ -128,7 +159,6 @@ class Game extends Component {
 
       // set command for both game and command panel.
       this.setState({currentCommands: commands, loading: false})
-      this.commandPanel.setState({commands: commands})
     }
   }
 
@@ -212,9 +242,11 @@ class Game extends Component {
     try {
       switch (command) {
       case -1: // rotate counter-clockwise
+        this.sounds['turn_left'].playAsync();
         this.monkey.rotate(false)
         return true
       case 1: // rotate clockwise
+        this.sounds['turn_right'].playAsync();
         this.monkey.rotate(true)
         return true
       case 0:
@@ -233,6 +265,7 @@ class Game extends Component {
             colIdx += 1
             break
         }
+        this.sounds['jump'].playAsync();
         return this.setMonkeyPosition(rowIdx, colIdx)
       }
     } catch (err) {
@@ -380,7 +413,7 @@ class Game extends Component {
             {/* dots  */}
             {this.renderDots(this.getCurrentStage())}
 
-            <CommandPanel ref={(ref)=>this.commandPanel=ref} />
+            <CommandPanel commands={this.state.currentCommands} />
           </View>
 
           {/* Touchable are accessible by default, so assistant need to be siblings of
