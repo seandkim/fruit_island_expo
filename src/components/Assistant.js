@@ -6,11 +6,15 @@ import {
   View,
   StyleSheet,
   TouchableWithoutFeedback } from 'react-native';
-import { ImagePicker } from 'expo';
+import { ImagePicker, Speech } from 'expo';
 
+/**
+ * This is a black sidebar displayed on the right. Controls the execution
+ * of the game.
+ * @type {[type]}
+ */
 class Assistant extends Component {
   /**
-   * Creates voice assistant that executes the game.
    * @param  {object} props.game Game it is running in.
    */
   constructor(props) {
@@ -19,50 +23,8 @@ class Assistant extends Component {
     this.currentCommands = null // result of parsing most recent picture
   }
 
-  ask(s) {
-    // TODO case on s
-    this.speakText("What can I help you with?")
-    const response = this.listenForSpeech()
-    return response
-  }
-
-  speakText(s) {
-    // TODO need to eject for speech to work?
-    // https://github.com/naoufal/react-native-speech
-    console.log("Spoke", s)
-
-  }
-
-  // TODO is this necessary?
-  speakError(s) {
-    Alert.alert(s)
-  }
-
-  listenForSpeech(s) {
-    Alert.alert(
-      null,
-      "What can I help you with?",
-      [
-        {text: 'Take Picture', onPress: this.props.takePhoto},
-        {text: 'Run Program', onPress: this.props.runProgram},
-        {text: 'Cancel'},
-      ],
-      { cancelable: false }
-    )
-
-    return null
-  }
-
-  // Activate voice assistant when screen pressed during the game
-  startVoiceAssistant() {
-    const response = this.ask("What can I help you with?")
-    // TODO currently below is NOT executed. Alert was async so i passed in
-    // callback function. When changing to real voice assistant, make sure it works
-    if (response === "take picture") {
-      this.props.game.takePicture()
-    } else if (response === "run program") {
-      this.props.game.runProgram()
-    }
+  speakText(text) {
+    Speech.speak(text)
   }
 
   openCamera() {
@@ -87,11 +49,13 @@ class Assistant extends Component {
   }
 
   openCamera = async () => {
-    console.log("Opened Camera")
+      this.speakText("Opening Camera")
+
       let result = await ImagePicker.launchCameraAsync({
         base64: true,
       });
 
+      this.speakText("Detecting fruits...")
       if (!result.cancelled) {
           console.log("sending POST call");
           var formData = new FormData();

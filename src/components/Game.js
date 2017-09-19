@@ -23,8 +23,6 @@ import stage3 from '../resources/stages/stage3.json';
 import stage4 from '../resources/stages/stage4.json';
 import TimerMixin from 'react-timer-mixin';
 
-import { ImagePicker } from 'expo'; // Camera
-
 /**
  * Main controller class. interaction with voice assistant and the map.
  * To add a stage, you must import the stage json file and add to this.stages.
@@ -99,9 +97,10 @@ class Game extends Component {
     console.log("receivedPostResult", fruits, error)
 
     if (error != "") {
-      Alert.alert("Could not connect to server.") //TODO change to voice
+      this.assistant.speakText("Could not connect to server. Double check your network connection.")
+      Alert.alert("Could not connect to server. Double check your network connection.") //TODO delete?
     } else {
-      //TODO speak the result
+      this.assistant.speakText("You entered " + fruits.join())
 
       let commands = []
       for (var i = 0; i < fruits.length; i++) {
@@ -244,7 +243,7 @@ class Game extends Component {
   runProgram() {
     console.log("runProgram start", this.state.currentCommands)
     if (!this.state.currentCommands) {
-      this.assistant.speakError("You need to take a picture first")
+      this.assistant.speakText("You need to take a picture first")
     } else {
       this.assistant.speakText("Running program...")
 
