@@ -1,6 +1,8 @@
 import React, { Component } from 'react';
 import {
+  ActivityIndicator,
   Alert,
+  Dimensions,
   Image,
   StyleSheet,
   Text,
@@ -45,8 +47,8 @@ class Game extends Component {
       stageIdx: 0,
       // TODO add loading status when waiting for async results
       gameStatus: "intro", // intro, started, fail, success, finished
-      cameraOn: false,
-      currentCommands: null // stores parsed result of latest photo taken
+      currentCommands: [], // stores parsed result of latest photo taken
+      loading: false,
     }
   }
 
@@ -100,7 +102,11 @@ class Game extends Component {
       this.assistant.speakText("Could not connect to server. Double check your network connection.")
       Alert.alert("Could not connect to server. Double check your network connection.") //TODO delete?
     } else {
-      this.assistant.speakText("You entered " + fruits.join())
+      if (fruits.length == 0) {
+        this.assistant.speakText("I could not find any fruits. Please try again.")
+      } else {
+        this.assistant.speakText("You entered " + fruits.join())
+      }
 
       let commands = []
       for (var i = 0; i < fruits.length; i++) {
@@ -120,13 +126,10 @@ class Game extends Component {
         commands.push(command)
       }
 
-      this.setCurrentCommands(commands)
+      // set command for both game and command panel.
+      this.setState({currentCommands: commands, loading: false})
+      this.commandPanel.setState({commands: commands})
     }
-  }
-
-  setCurrentCommands(commands) {
-    this.setState({currentCommands: commands})
-    this.commandPanel.setState({commands: commands})
   }
 
   /**
@@ -242,7 +245,7 @@ class Game extends Component {
 
   runProgram() {
     console.log("runProgram start", this.state.currentCommands)
-    if (!this.state.currentCommands) {
+    if (!this.state.currentCommands || this.state.currentCommands.length == 0) {
       this.assistant.speakText("You need to take a picture first")
     } else {
       this.assistant.speakText("Running program...")
@@ -380,11 +383,19 @@ class Game extends Component {
             <CommandPanel ref={(ref)=>this.commandPanel=ref} />
           </View>
 
-          {/* Touchable are accessible by default, so need to be siblings of
+          {/* Touchable are accessible by default, so assistant need to be siblings of
             dots to avoid accessibility conflicts. */}
-          {/* TODO delete callback functions */}
           <Assistant ref={(ref)=>this.assistant=ref} game={this}
           receivedPostResult={this.receivedPostResult.bind(this)}/>
+
+          {/* loading icon */}
+          {this.state.loading &&
+            <View style={styles.loadingWrapper}>
+              <ActivityIndicator
+                animating = {true}
+                size = "large"
+              />
+            </View>}
         </View>
       )
     // if game is not being played & need to show specific page
@@ -396,6 +407,7 @@ class Game extends Component {
 
 const styles = StyleSheet.create({
   wholeWrapper: {
+    backgroundColor: "#ffeb3b", //yellow
     width: "100%",
     height: "100%",
     flexDirection: "row",
@@ -406,19 +418,20 @@ const styles = StyleSheet.create({
     width: "80%",
     height: "100%",
     flexDirection: 'column',
-    justifyContent: 'space-between',
+    justifyContent: 'flex-end',
     alignItems: 'center',
   },
 
+  // when displaying image for intro, success, fail, etc
   screenWrapper: {
     width: "100%",
     height: "100%",
   },
 
   dotsWrapper: {
-    backgroundColor: "#ffeb3b", //yellow
-    width: "100%",
-    height: "80%",
+    width: "90%",
+    height: "75%", // creates a small padding on the top.
+                   // To get rid of it, change height to 80%
     flexDirection: 'column',
     justifyContent: 'space-around',
     alignContent: 'center',
@@ -430,7 +443,18 @@ const styles = StyleSheet.create({
     justifyContent: 'space-around',
     width: "100%",
   },
+
+  loadingWrapper: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    justifyContent: 'center',
+    alignItems: 'center'
+  }
 })
+
 
 const mapStateToProps = (state, ownProps) => {
   return { currentStageIdx: state.currentStageIdx }
