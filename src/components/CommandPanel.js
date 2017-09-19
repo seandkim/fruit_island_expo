@@ -32,9 +32,12 @@ export default class CommandPanel extends Component {
   }
 
   render() {
-    const icons = this.props.commands.map(
-      (command, i) => this.getIcon(command, i)
-    )
+    let icons;
+    if (this.props.commands) {
+      icons = this.props.commands.map(
+        (command, i) => this.getIcon(command, i)
+      )
+    }
 
     return (
       <View style={styles.panelWrapper}>

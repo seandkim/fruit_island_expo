@@ -63,9 +63,9 @@ class Monkey extends Component {
     }
 
     if (turnClockwise) {
-      dirIdx += 1
+      dirIdx = (dirIdx + 1) % 4
     } else {
-      dirIdx -= 1
+      dirIdx = (dirIdx - 1) % 4
     }
 
     this.setState({direction: this.dirOrder[dirIdx]})

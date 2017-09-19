@@ -49,38 +49,20 @@ class Game extends Component {
       stageIdx: 0,
       // TODO add loading status when waiting for async results
       gameStatus: "intro", // intro, started, fail, success, finished
-      currentCommands: [1,1,1,1], // stores parsed result of latest photo taken
+      currentCommands: [-1,0,0,0], // stores parsed result of latest photo taken
       loading: false,
     }
-
-    // dictinary of action => Expo.Audio.Sound object
-    this.sounds = this.loadSounds()
   }
 
-  loadSounds() {
-    const paths = {
-      'jump': require('../resources/sounds/jump.wav'),
-      'turn_left': require('../resources/sounds/turn_left.mp3'),
-      'turn_right': require('../resources/sounds/turn_right.wav'),
+  // this.props.sounds is a dictionary of action => Expo.Audio.Sound object
+  // see loadSounds() in App.js to see what actions are possible
+  playSound(action) {
+    try {
+      this.props.sounds[action].playAsync();
+      this.props.sounds[action].setPositionAsync(0);
+    } catch (err) {
+      console.log("Could not play", action)
     }
-
-    let sounds = {}
-    for (let action in paths) {
-      const soundObject = new Expo.Audio.Sound();
-      try {
-
-
-        // TODO change to await somehow. Currently it raises "await is a
-        // reserved word" error. This works just because audio is played
-        // some time after it is loaded (when commands are being executed)
-        soundObject.loadAsync(paths[action]);
-      } catch (error) {
-      }
-
-      sounds[action] = soundObject
-    }
-
-    return sounds
   }
 
   getCurrentStage() {
@@ -216,14 +198,18 @@ class Game extends Component {
       // setTimeout(() => this.props.stageClear("success"), this.moveIntvl)
 
       setTimeout(() => this.setState({
-        currentCommands: null,
+        currentCommands: [],
         gameStatus: this.stages.length === this.state.stageIdx+1 ? 'finished' : 'success'
       }), this.moveIntvl)
 
     } else if (!monkeyDot.isJumpable()) {
       setTimeout(() => {
-        Alert.alert("jumped to empty dot!") // TODO delete
-        this.props.stageClear("failure")
+        // TODO potential async bug?
+        // TODO change to redux action
+        // TODO should we reset the commands every time we fail?
+        this.setState({
+          gameStatus: 'fail',
+        })
       }, this.moveIntvl)
       return false
     }
@@ -242,11 +228,11 @@ class Game extends Component {
     try {
       switch (command) {
       case -1: // rotate counter-clockwise
-        this.sounds['turn_left'].playAsync();
+        this.playSound('turn_left')
         this.monkey.rotate(false)
         return true
       case 1: // rotate clockwise
-        this.sounds['turn_right'].playAsync();
+        this.playSound('turn_right')
         this.monkey.rotate(true)
         return true
       case 0:
@@ -265,7 +251,7 @@ class Game extends Component {
             colIdx += 1
             break
         }
-        this.sounds['jump'].playAsync();
+        this.playSound('jump')
         return this.setMonkeyPosition(rowIdx, colIdx)
       }
     } catch (err) {
@@ -326,10 +312,12 @@ class Game extends Component {
       onPress=(() => this.setState({gameStatus: 'started', stageIdx: 0}))
       break
     case 'fail':
+      this.playSound('fail')
       path=require('../resources/screens/failed.jpg')
       onPress=(() => this.setState({gameStatus: 'started'}))
       break
     case 'success':
+      this.playSound('success')
       path=require('../resources/screens/success.jpg')
       onPress=(() => {
         this.setState({
