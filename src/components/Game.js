@@ -50,9 +50,9 @@ class Game extends Component {
       stageIdx: 0,
       // TODO add loading status when waiting for async results
       gameStatus: "started", // intro, started, fail, success, finished
-      currentCommands: [0,0,0], // stores parsed result of latest photo taken
+      currentCommands: [], // stores parsed result of latest photo taken
       loading: false, // displays the loading icon and disables all buttons
-      helpScreen: true, // displays the help screen
+      helpScreen: false, // displays the help screen
     }
   }
 
@@ -422,7 +422,10 @@ class Game extends Component {
 
           {/* help screen */}
           {this.state.helpScreen &&
-            <HelpScreen />
+            <HelpScreen close={() => {
+              this.assistant.speakText("Closing Help Screen")
+              this.setState({helpScreen: false})
+            }}/>
           }
         </View>
       )

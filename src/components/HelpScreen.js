@@ -4,7 +4,8 @@ import {
   Image,
   Text,
   View,
-  StyleSheet, } from 'react-native';
+  StyleSheet,
+  TouchableWithoutFeedback } from 'react-native';
 import { FontAwesome } from '@expo/vector-icons';
 
 /**
@@ -16,6 +17,16 @@ export default class HelpScreen extends Component {
   render() {
     return (
       <View style={styles.wrapper}>
+        {/* Close Button */}
+        <View style={styles.closeWrapper}>
+          <View style={styles.closeButton}>
+            <TouchableWithoutFeedback accessibilityLabel={'Close Button for Help Screen'}
+              style={{backgroundColor: 'yellow'}} onPress={this.props.close}>
+              <FontAwesome name="close" size={iconSize} style={{ color: 'white' }} />
+            </TouchableWithoutFeedback>
+          </View>
+        </View>
+
         <View style={styles.panel}>
           <View style={styles.wing}>
             <View style={styles.row}>
@@ -46,16 +57,6 @@ export default class HelpScreen extends Component {
               </View>
               <View style={styles.row}>
                 <Text style={styles.text}>3. Run the program </Text>
-              </View>
-              <View style={[styles.row, {justifyContent: "flex-end"}]}>
-                <View style={styles.buttonWrapper}>
-                  <Button
-                    onPress={() => {}}
-                    title="Resume"
-                    color="blue"
-                    accessibilityLabel="Resume Button"
-                  />
-                </View>
               </View>
             </View>
         </View>
@@ -127,14 +128,38 @@ const styles = StyleSheet.create({
     color: 'white',
   },
 
-  buttonWrapper: {
-    backgroundColor: 'white',
-    borderRadius: 10,
-  },
-
   text: {
     fontSize: 20,
     color: 'white',
     textAlign: 'left',
+  },
+
+  closeWrapper: {
+    zIndex: 10,
+    width: '70%',
+    position: 'relative',
+    display: 'flex',
+    flexDirection: 'row',
+    justifyContent: 'flex-start',
+  },
+
+  closeButton: {
+    width: iconSize*1.3,
+    height: iconSize*1.3,
+    borderRadius: iconSize*1.3/2,
+    position: 'absolute',
+    backgroundColor: 'red',
+    justifyContent: 'center',
+    alignItems: 'center',
+    // to place on the corner
+    transform: [
+      { translateX: -iconSize/3 },
+      { translateY: -iconSize/3 }
+    ],
+
+    shadowOffset: {width: 2, height: 2},
+    shadowOpacity: 0.5,
+    shadowColor: 'black',
+    shadowRadius: 2,
   }
 })

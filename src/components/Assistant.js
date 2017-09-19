@@ -49,13 +49,13 @@ class Assistant extends Component {
 
   displayHelp() {
     // TODO should it speak instructions?
-    // this.speakText("Help Screen")
-    this.props.setState({helpScreen: true})
+    this.speakText("Opening Help Screen.")
+    this.props.game.setState({helpScreen: true})
   }
 
   render() {
     return (
-      <View style={styles.wrapper} accessibilityLabel={'Voice Assistant'}>
+      <View style={styles.wrapper}>
         <TouchableWithoutFeedback
           accessibilityLabel={'Camera Button'}
           onPress={this.openCamera} >
@@ -123,7 +123,7 @@ class Assistant extends Component {
         }.bind(this));
       } else {
         // Pressed 'Cancel' at Camera Screen
-        this.speakText("Cancelled.")
+        this.speakText("Closing Camera. No picture taken.")
       }
     };
 }
