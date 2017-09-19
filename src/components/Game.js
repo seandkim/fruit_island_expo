@@ -48,8 +48,8 @@ class Game extends Component {
     this.state = {
       stageIdx: 0,
       // TODO add loading status when waiting for async results
-      gameStatus: "intro", // intro, started, fail, success, finished
-      currentCommands: [-1,0,0,0], // stores parsed result of latest photo taken
+      gameStatus: "started", // intro, started, fail, success, finished
+      currentCommands: [0,0,0], // stores parsed result of latest photo taken
       loading: false,
     }
   }
@@ -262,16 +262,10 @@ class Game extends Component {
     }
   }
 
-  runProgram() {
-    console.log("runProgram start", this.state.currentCommands)
-    if (!this.state.currentCommands || this.state.currentCommands.length == 0) {
-      this.assistant.speakText("You need to take a picture first")
+  runProgram(commands) {
+    if (!commands || commands.length == 0) {
+      // this should be done when this function is called in Assistant.js
     } else {
-      this.assistant.speakText("Running program...")
-
-      // const commands = (this.getCurrentStage())['solution']
-      commands = this.state.currentCommands
-
       // pass in command to move the monkey in intervals. The verbosity is due
       // to the fact that you can't pass in different argument to setInterval
       // function
@@ -299,6 +293,11 @@ class Game extends Component {
         }
       }.bind(this), this.moveIntvl)
     }
+  }
+
+  solvePhase() {
+    this.assistant.speakText("Solving the phase.")
+
   }
 
   ///////////////////////////////////

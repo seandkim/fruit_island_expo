@@ -31,8 +31,20 @@ class Assistant extends Component {
     Speech.speak(text)
   }
 
-  openCamera() {
-    this.props.game.setState({cameraOn: true})
+  runButtonPressed() {
+    const commands = this.props.game.state.currentCommands
+    if (!commands || commands.length == 0) {
+      this.speakText("You need to take a picture first")
+    } else {
+      this.speakText("Running program...")
+      this.props.game.runProgram(commands)
+    }
+  }
+
+  solvePhase() {
+    this.speakText("Solving the phase")
+    const commands = (this.props.game.getCurrentStage())['solution']
+    this.props.game.runProgram(commands)
   }
 
   displayHelp() {
@@ -50,8 +62,13 @@ class Assistant extends Component {
         </TouchableWithoutFeedback>
         <TouchableWithoutFeedback
           accessibilityLabel={'Run Button'}
-          onPress={this.props.game.runProgram.bind(this.props.game)} >
+          onPress={this.runButtonPressed.bind(this)} >
           <FontAwesome name="play" size={iconStyle} style={{ color: 'white' }} />
+        </TouchableWithoutFeedback>
+        <TouchableWithoutFeedback
+          accessibilityLabel={'Solve Button'}
+          onPress={this.solvePhase.bind(this)} >
+          <FontAwesome name="key" size={iconStyle} style={{ color: 'white' }} />
         </TouchableWithoutFeedback>
         <TouchableWithoutFeedback
           accessibilityLabel={'Help Button'}
