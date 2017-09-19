@@ -48,7 +48,9 @@ class Assistant extends Component {
   }
 
   displayHelp() {
-
+    // TODO should it speak instructions?
+    // this.speakText("Help Screen")
+    this.props.setState({helpScreen: true})
   }
 
   render() {
@@ -58,22 +60,22 @@ class Assistant extends Component {
           accessibilityLabel={'Camera Button'}
           onPress={this.openCamera} >
           {/* TODO change to font awesome icon */}
-          <FontAwesome name="camera" size={iconStyle} style={{ color: 'white' }} />
+          <FontAwesome name="camera" size={iconSize} style={{ color: 'white' }} />
         </TouchableWithoutFeedback>
         <TouchableWithoutFeedback
           accessibilityLabel={'Run Button'}
           onPress={this.runButtonPressed.bind(this)} >
-          <FontAwesome name="play" size={iconStyle} style={{ color: 'white' }} />
+          <FontAwesome name="play" size={iconSize} style={{ color: 'white' }} />
         </TouchableWithoutFeedback>
         <TouchableWithoutFeedback
           accessibilityLabel={'Solve Button'}
           onPress={this.solvePhase.bind(this)} >
-          <FontAwesome name="key" size={iconStyle} style={{ color: 'white' }} />
+          <FontAwesome name="key" size={iconSize} style={{ color: 'white' }} />
         </TouchableWithoutFeedback>
         <TouchableWithoutFeedback
           accessibilityLabel={'Help Button'}
-          onPress={this.displayHelp} >
-          <FontAwesome name="question" size={iconStyle} style={{ color: 'white' }} />
+          onPress={this.displayHelp.bind(this)} >
+          <FontAwesome name="question" size={iconSize} style={{ color: 'white' }} />
         </TouchableWithoutFeedback>
       </View>
     )
@@ -126,7 +128,7 @@ class Assistant extends Component {
     };
 }
 
-const iconStyle = 40;
+const iconSize = 40;
 const styles = StyleSheet.create({
   wrapper: {
     width: '20%',

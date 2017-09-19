@@ -18,6 +18,7 @@ import Monkey from './Monkey';
 import Assistant from './Assistant';
 import CommandPanel from './CommandPanel';
 import CameraScreen from './CameraScreen';
+import HelpScreen from './HelpScreen';
 import stage0 from '../resources/stages/stage0.json';
 import stage1 from '../resources/stages/stage1.json';
 import stage2 from '../resources/stages/stage2.json';
@@ -50,7 +51,8 @@ class Game extends Component {
       // TODO add loading status when waiting for async results
       gameStatus: "started", // intro, started, fail, success, finished
       currentCommands: [0,0,0], // stores parsed result of latest photo taken
-      loading: false,
+      loading: false, // displays the loading icon and disables all buttons
+      helpScreen: true, // displays the help screen
     }
   }
 
@@ -325,6 +327,7 @@ class Game extends Component {
       })})
       break;
     case 'finished': // reset the game
+      this.playSound('success')
       path=require('../resources/screens/final.jpg')
       onPress=(() => this.setState({gameStatus: 'intro'}))
       break;
@@ -416,6 +419,11 @@ class Game extends Component {
                 size = "large"
               />
             </View>}
+
+          {/* help screen */}
+          {this.state.helpScreen &&
+            <HelpScreen />
+          }
         </View>
       )
     // if game is not being played & need to show specific page

@@ -56,6 +56,8 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "flex-start",
     alignItems: "center",
+    paddingLeft: 10,
+    paddingRight: 10,
   },
 
   icon: {
