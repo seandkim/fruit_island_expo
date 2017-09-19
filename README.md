@@ -4,7 +4,7 @@
 
 #### The Super Fast Way
 - Download `Expo` app on your phone (ios/android).
-- Run the program using [this link](https://exp.host/@seandkim/fruit_island_expo). You can go to the link using your phone or open the link using another device then scan the QR code.
+- Run the program using [this link](https://exp.host/@seandkim/fruit_island_expo). 
 
 #### The Fast way
 - Clone the repository
