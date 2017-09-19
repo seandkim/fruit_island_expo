@@ -1,5 +1,5 @@
 import React from 'react';
-import { Button, Image, View } from 'react-native';
+import { Button, Image, Text, View } from 'react-native';
 import { ImagePicker } from 'expo';
 
 export default class CameraScreen extends React.Component {
@@ -7,29 +7,25 @@ export default class CameraScreen extends React.Component {
     super(props)
 
     this.state = {
-      imageURI: null,
-    };
+      fruits: "hi",
+    }
   }
 
   render() {
     console.log("render start", this.state)
-    var root = 'http://ec2-54-165-118-145.compute-1.amazonaws.com:8080/classify/api';
-    let { imageURI } = this.state;
-
     return (
       <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
         <Button
           title="Pick an image from camera roll1"
           onPress={this._pickImage}
         />
-        {imageURI &&
-          <Image source={{ uri: imageURI }} style={{ width: 200, height: 200 }} />}
+        <Text>{this.state.fruits}</Text>
       </View>
     );
   }
 
   _pickImage = async () => {
-    console.log("pickImage start")
+    console.log("Opened Camera")
       let result = await ImagePicker.launchCameraAsync({
         base64: true,
       });
@@ -49,13 +45,21 @@ export default class CameraScreen extends React.Component {
           })
           .then(function(responseJson) {
               console.log("SUCCESS!!!", responseJson);
+              // replace single quote to double quote to interpret as json
+              const results = JSON.parse(responseJson._bodyText.replace(/\'/g, "\""))
+
+              var fruits = []
+              for (var i = 0; i < results.length; i++) {
+                fruits.push(results[i]["label"])
+              }
+              console.log(fruits)
+
+              this.setState({ 'fruits' : fruits })
           }.bind(this))
+
           .catch(function(error) {
               console.log("ERROR!!!", error)
           }.bind(this));
-
-          console.log("end of pickImage")
-          this.setState({ imageURI: result.uri});
       }
     };
 }

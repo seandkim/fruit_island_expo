@@ -4,6 +4,7 @@ import { Provider } from 'react-redux';
 import { createStore } from 'redux';
 import reducers from './src/reducers';
 import Game from './src/components/Game';
+import CameraScreen from './src/components/CameraScreen';
 
 export default class App extends React.Component {
   constructor(props) {
@@ -17,11 +18,12 @@ export default class App extends React.Component {
     }
 
     return (
-      <Provider store={createStore(reducers, init)}>
-        <View style={styles.container}>
-          <Game/>
-        </View>
-      </Provider>
+      // <Provider store={createStore(reducers, init)}>
+      //   <View style={styles.container}>
+      //     <Game/>
+      //   </View>
+      // </Provider>
+      <CameraScreen />
     );
   }
 }

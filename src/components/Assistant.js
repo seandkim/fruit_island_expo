@@ -74,16 +74,12 @@ class Assistant extends Component {
         <TouchableWithoutFeedback
           accessibilityLabel={'Camera Button'}
           onPress={this.openCamera.bind(this)} >
-          <View style={styles.button}>
-            <Text>Camera</Text>
-          </View>
+          <Image source={require('../resources/UI_Components/camera.png')}/>
         </TouchableWithoutFeedback>
         <TouchableWithoutFeedback
           accessibilityLabel={'Run Button'}
           onPress={this.props.game.runProgram.bind(this.props.game)} >
-          <View style={styles.button}>
-            <Text>Run</Text>
-          </View>
+          <Image source={require('../resources/UI_Components/play_white.png')}/>
         </TouchableWithoutFeedback>
       </View>
     )

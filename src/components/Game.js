@@ -23,6 +23,8 @@ import stage3 from '../resources/stages/stage3.json';
 import stage4 from '../resources/stages/stage4.json';
 import TimerMixin from 'react-timer-mixin';
 
+import { ImagePicker } from 'expo'; // Camera
+
 /**
  * Main controller class. interaction with voice assistant and the map.
  * To add a stage, you must import the stage json file and add to this.stages.
@@ -91,39 +93,10 @@ class Game extends Component {
    * TODO set cameraOn to false first, then display loading screen
    * @param  {[type]} data [description]
    */
-  tookPicture(data) {
-    console.log("tookPicture start", data, this)
+  tookPicture(imageBase64) {
+    console.log("tookPicture start", )
 
-    // TODO delete. for faster demonstration without api call
-    const results = ['banana', 'apple', 'apple']; // TODO change to real results
-    this.currentCommands = results;
-    Alert.alert("Results are " + results) // TODO change to voice assistant. Right now, async call results in undefined this.assistant
-    this.setState({cameraOn: false, currentCommands: results})
 
-    // var root = 'https://jsonplaceholder.typicode.com';
-    // fetch(root + '/posts/1', {
-    //         method: 'GET',
-    //         headers: {
-    //           'Accept': 'application/json',
-    //           'Content-Type': 'application/json',
-    //         }
-    //         // body: JSON.stringify({
-    //         //   firstParam: 'yourValue',
-    //         //   secondParam: 'yourOtherValue',
-    //         // })
-    //       })
-    //   .then(function(responseJson) {
-    //     console.log("Success: API call returned", responseJson);
-    //     const results = ['banana', 'apple', 'apple']; // TODO change to real results
-    //     this.currentCommands = results;
-    //     Alert.alert("Results are " + results) // TODO change to voice assistant. Right now, async call results in undefined this.assistant
-    //     this.setState({cameraOn: false, currentCommands: results})
-    //   }.bind(this))
-    //   .catch(function(error) {
-    //     console.error(error);
-    //     Alert.alert("Error: Could not connect to the server. Please check your internet connection")
-    //     this.setState({cameraOn: false})
-    //   });
   }
 
   /**
@@ -344,14 +317,6 @@ class Game extends Component {
         ))}
       </View>
     );
-  }
-
-  renderCommands() {
-    return (
-      <View style={styles.commandsWrapper}>
-
-      </View>
-    )
   }
 
   render() {
