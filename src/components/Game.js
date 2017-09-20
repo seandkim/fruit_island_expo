@@ -26,7 +26,7 @@ import stage3 from '../resources/stages/stage3.json';
 import stage4 from '../resources/stages/stage4.json';
 import TimerMixin from 'react-timer-mixin';
 
-import { Audio } from 'expo';
+import { Audio, Speech } from 'expo';
 
 /**
  * Main controller class. interaction with voice assistant and the map.
@@ -65,6 +65,10 @@ class Game extends Component {
     } catch (err) {
       console.log("Could not play", action)
     }
+  }
+
+  speakText(text) {
+    Speech.speak(text)
   }
 
   getCurrentStage() {
@@ -114,13 +118,13 @@ class Game extends Component {
     console.log("receivedPostResult", fruits, error)
 
     if (error != "") {
-      this.assistant.speakText("Could not connect to server. Double check your network connection.")
+      this.speakText("Could not connect to server. Double check your network connection.")
       Alert.alert("Could not connect to server. Double check your network connection.") //TODO delete?
     } else {
       if (fruits.length == 0) {
-        this.assistant.speakText("I could not find any fruits. Please try again.")
+        this.speakText("I could not find any fruits. Please try again.")
       } else {
-        this.assistant.speakText("You entered " + fruits.join())
+        this.speakText("You entered " + fruits.join())
       }
 
       let commands = []
@@ -294,7 +298,7 @@ class Game extends Component {
   ///////// Render Function /////////
   ///////////////////////////////////
   renderScreen(status) {
-    let path, onPress;
+    let path, onPress, accLabel;
     switch (status) {
     case 'intro':
       path=require('../resources/screens/intro.png')
@@ -303,6 +307,7 @@ class Game extends Component {
         stageIdx: 0,
         currentCommands: []
       }))
+      accLabel = "Hello, I am Cody. Today, let's play a game that would teach us the basics of computer science. I look forward to it. Would you like to touch the screen to start?"
       break
     case 'fail':
       this.playSound('fail')
@@ -311,6 +316,7 @@ class Game extends Component {
         gameStatus: 'started',
         currentCommands: []
       }))
+      accLabel = "Touch the screen to try again."
       break
     case 'success':
       this.playSound('success')
@@ -321,18 +327,21 @@ class Game extends Component {
         stageIdx: this.state.stageIdx+1,
         currentCommands: []
       })})
+      accLabel = "Good job, touch the screen to move to the next stage"
       break;
     case 'finished': // reset the game
       this.playSound('success')
       path=require('../resources/screens/final.jpg')
       onPress=(() => this.setState({gameStatus: 'intro'}))
+      accLabel = "You finished all the stage."
       break;
     default:
       throw ("Unrecognizable game status: " + this.gameStatus)
     }
 
     return (
-      <TouchableHighlight style={styles.wholeWrapper} onPress={onPress}>
+      <TouchableHighlight style={styles.wholeWrapper} onPress={onPress}
+        accesible={true} accessibilityLabel={accLabel}>
         <Image style={styles.screenWrapper} source={path}/>
       </TouchableHighlight>
     )
@@ -410,18 +419,12 @@ class Game extends Component {
           {/* loading icon */}
           {this.state.loading &&
             <View style={styles.loadingWrapper}>
-              <ActivityIndicator
-                animating = {true}
-                size = "large"
-              />
+              <ActivityIndicator animating = {true} size = "large"/>
             </View>}
 
           {/* help screen */}
           {this.state.helpScreen &&
-            <HelpScreen close={() => {
-              this.assistant.speakText("Closing Help Screen")
-              this.setState({helpScreen: false})
-            }}/>
+            <HelpScreen close={() => {this.setState({helpScreen: false})}}/>
           }
         </View>
       )

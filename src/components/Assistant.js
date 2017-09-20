@@ -6,10 +6,7 @@ import {
   View,
   StyleSheet,
   TouchableWithoutFeedback } from 'react-native';
-import {
-  ImagePicker,
-  Speech,
-} from 'expo';
+import { ImagePicker } from 'expo';
 import { FontAwesome } from '@expo/vector-icons';
 
 /**
@@ -27,71 +24,61 @@ class Assistant extends Component {
     this.currentCommands = null // result of parsing most recent picture
   }
 
-  speakText(text) {
-    Speech.speak(text)
-  }
-
   runButtonPressed() {
     const commands = this.props.game.state.currentCommands
     if (!commands || commands.length == 0) {
-      this.speakText("You need to take a picture first")
+      this.props.game.speakText("You need to take a picture first")
     } else {
       // TODO want to change to playSound('monkey') but audio gets mixed up
-      this.speakText("Running program...")
       this.props.game.runProgram(commands)
     }
   }
 
   solvePhase() {
-    this.speakText("Solving the phase")
     const commands = (this.props.game.getCurrentStage())['solution']
     this.props.game.runProgram(commands)
   }
 
   displayHelp() {
     // TODO should it speak instructions?
-    this.speakText("Opening Help Screen.")
     this.props.game.setState({helpScreen: true})
   }
 
   render() {
     return (
-      <View style={styles.wrapper}>
-        <TouchableWithoutFeedback
-          accessibilityLabel={'Camera Button'}
-          onPress={this.openCamera} >
-          {/* TODO change to font awesome icon */}
-          <FontAwesome name="camera" size={iconSize} style={{ color: 'white' }} />
-        </TouchableWithoutFeedback>
-        <TouchableWithoutFeedback
-          accessibilityLabel={'Run Button'}
-          onPress={this.runButtonPressed.bind(this)} >
-          <FontAwesome name="play" size={iconSize} style={{ color: 'white' }} />
-        </TouchableWithoutFeedback>
-        <TouchableWithoutFeedback
-          accessibilityLabel={'Solve Button'}
-          onPress={this.solvePhase.bind(this)} >
-          <FontAwesome name="key" size={iconSize} style={{ color: 'white' }} />
-        </TouchableWithoutFeedback>
-        <TouchableWithoutFeedback
-          accessibilityLabel={'Help Button'}
-          onPress={this.displayHelp.bind(this)} >
-          <FontAwesome name="question" size={iconSize} style={{ color: 'white' }} />
-        </TouchableWithoutFeedback>
+      <View style={styles.wrapper} >
+        <View accessible={true} accessibilityLabel={'Camera Button'}>
+          <TouchableWithoutFeedback onPress={this.openCamera} >
+            <FontAwesome name="camera" size={iconSize} style={{ color: 'white' }} />
+          </TouchableWithoutFeedback>
+        </View>
+        <View accessible={true} accessibilityLabel={'Run Button'}>
+          <TouchableWithoutFeedback onPress={this.runButtonPressed.bind(this)} >
+            <FontAwesome name="play" size={iconSize} style={{ color: 'white' }} />
+          </TouchableWithoutFeedback>
+        </View>
+        <View accessible={true} accessibilityLabel={'Solve Button'}>
+          <TouchableWithoutFeedback onPress={this.solvePhase.bind(this)} >
+            <FontAwesome name="key" size={iconSize} style={{ color: 'white' }} />
+          </TouchableWithoutFeedback>
+        </View>
+        <View accessible={true} accessibilityLabel={'Help Button'}>
+          <TouchableWithoutFeedback onPress={this.displayHelp.bind(this)} >
+            <FontAwesome name="question" size={iconSize} style={{ color: 'white' }} />
+          </TouchableWithoutFeedback>
+        </View>
       </View>
     )
   }
 
   openCamera = async () => {
-      this.speakText("Opening Camera.")
-
       let result = await ImagePicker.launchCameraAsync({
         base64: true,
       });
 
       if (!result.cancelled) {
         this.props.game.setState({loading: true})
-        this.speakText("Detecting fruits. Please Wait")
+        this.props.game.speakText("Detecting fruits. Please Wait")
 
         console.log("sending POST call");
         var formData = new FormData();
@@ -124,7 +111,6 @@ class Assistant extends Component {
         }.bind(this));
       } else {
         // Pressed 'Cancel' at Camera Screen
-        this.speakText("Closing Camera. No picture taken.")
       }
     };
 }

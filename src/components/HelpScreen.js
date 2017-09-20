@@ -17,18 +17,18 @@ export default class HelpScreen extends Component {
   render() {
     return (
       <View style={styles.wrapper}>
-        {/* Close Button */}
+        {/* Close Button at top left */}
         <View style={styles.closeWrapper}>
-          <View style={styles.closeButton}>
-            <TouchableWithoutFeedback accessibilityLabel={'Close Button for Help Screen'}
-              style={{backgroundColor: 'yellow'}} onPress={this.props.close}>
+          <View style={styles.closeButton} accessible={true} accessibilityLabel={"Close Button for Help"}>
+            <TouchableWithoutFeedback accessible={false} style={{backgroundColor: 'yellow'}} onPress={this.props.close}>
               <FontAwesome name="close" size={iconSize} style={{ color: 'white' }} />
             </TouchableWithoutFeedback>
           </View>
         </View>
 
         <View style={styles.panel}>
-          <View style={styles.wing}>
+          <View style={styles.wing} accessible={true}
+            accessibilityLabel={"Banana is for moving forward, Orange is for rotating counter-clockwise, Apple is for rotating clockwise."}>
             <View style={styles.row}>
               <Image style={styles.image} source={require('../resources/icons/banana.png')} />
               <Text style={styles.equal}>=</Text>
@@ -48,7 +48,8 @@ export default class HelpScreen extends Component {
             </View>
           </View>
           <View style={styles.divider}></View>
-          <View style={styles.wing}>
+          <View style={styles.wing} accessible={true}
+            accessibilityLabel={"1. Arrange fruits. 2. Take a picture of the fruits. 3. Run the program."}>
               <View style={styles.row}>
                 <Text style={styles.text}>1. Arrange fruits </Text>
               </View>
